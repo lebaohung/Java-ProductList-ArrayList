@@ -1,8 +1,10 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 public class ProductManager {
-    private ArrayList<Product> productList = new ArrayList<Product>();
+    private LinkedList<Product> productList = new LinkedList<Product>();
+//  private ArrayList<Product> productList = new ArrayList<Product>();
     private static Scanner scanner = new Scanner(System.in);
 
     public Product inputProduct() {
@@ -52,15 +54,16 @@ public class ProductManager {
     }
 
     public void deleteById(int id) {
+        boolean checkID = false;
         for (int i = 0; i < productList.size(); i++) {
             if (productList.get(i).getId() == id) {
                 System.out.print("Deleting ID Product: " + id + "...");
                 productList.remove(i);
                 System.out.println("Done!");
-            } else {
-                System.out.println("Invalid ID!");
+                checkID = true;
             }
         }
+        if (!checkID) System.out.println("Invalid ID!");
     }
 
     public void showList() {
