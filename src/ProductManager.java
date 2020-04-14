@@ -1,12 +1,19 @@
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 public class ProductManager {
     private LinkedList<Product> productList = new LinkedList<Product>();
 //  private ArrayList<Product> productList = new ArrayList<Product>();
-    private static Scanner scanner = new Scanner(System.in);
+    private Scanner scanner = new Scanner(System.in);
 
+    public void addDemo() {
+        productList.add(new Product(1, "IPhone6", 5000000));
+        productList.add(new Product(2, "IPhone 7", 5500000));
+        productList.add(new Product(3, "IPhone X", 10000000));
+        productList.add(new Product(4, "IPhone 11 Pro", 25000000));
+        productList.add(new Product(5, "IPhone 8", 9000000));
+        productList.add(new Product(6, "IPhone 8 Plus", 11000000));
+    }
     public Product inputProduct() {
         System.out.print("Enter ID: ");
         int id = scanner.nextInt();
@@ -22,6 +29,7 @@ public class ProductManager {
 
     public void add(Product product) {
         productList.add(product);
+
     }
 
     public int scannerID() {
@@ -67,10 +75,10 @@ public class ProductManager {
     }
 
     public void showList() {
-        System.out.printf("%-5s%-20s%-15s\n", "ID", "Name", "Price");
+        System.out.printf("%-5s%-20s%15s\n", "ID", "Name", "Price");
         for (int i = 0; i < productList.size(); i++) {
             Product thisProduct = productList.get(i);
-            System.out.printf("%-5d%-20s%-15d\n", thisProduct.getId(), thisProduct.getName(), thisProduct.getPrice());
+            System.out.printf("%-5d%-20s%15d\n", thisProduct.getId(), thisProduct.getName(), thisProduct.getPrice());
         }
     }
 
@@ -78,11 +86,11 @@ public class ProductManager {
         boolean check = false;
         for (int i = 0; i < productList.size(); i++) {
             Product thisProduct = productList.get(i);
-            if (thisProduct.getName().equals(name)) {
-                if (check) {
-                    System.out.printf("%-5s%-20s%-15s\n", "ID", "Name", "Price");
+            if (thisProduct.getName().toLowerCase().contains(name)) {
+                if (!check) {
+                    System.out.printf("%-5s%-20s%15s\n", "ID", "Name", "Price");
                 }
-                System.out.printf("%-5d%-20s%-15d\n", thisProduct.getId(), thisProduct.getName(), thisProduct.getPrice());
+                System.out.printf("%-5d%-20s%15d\n", thisProduct.getId(), thisProduct.getName(), thisProduct.getPrice());
                 check = true;
             }
         }
@@ -92,32 +100,61 @@ public class ProductManager {
     }
 
     public void sortAscendingOrder() {
-        for (int i = 0; i < productList.size() -1 ; i++) {
-            Product currentProduct = productList.get(i);
-            for (int j = i +1; j < productList.size(); j++) {
-                Product toCompareProduct = productList.get(j);
-                if (currentProduct.getPrice() > toCompareProduct.getPrice()) {
-                    Product temp = productList.get(i);
-                    productList.set(i, productList.get(j));
-                    productList.set(j, temp);
-                    currentProduct = productList.get(i);
-                }
+        Collections.sort(productList, new Comparator<Product>() {
+            @Override
+            public int compare(Product o1, Product o2) {
+                return o1.getPrice() - o2.getPrice();
             }
-        }
+        });
     }
 
     public void sortDescendingOrder() {
-        for (int i = 0; i < productList.size() -1; i++) {
-            Product currentProduct = productList.get(i);
-            for (int j = i +1; j < productList.size(); j++) {
-                Product toCompareProduct = productList.get(j);
-                if (currentProduct.getPrice() < toCompareProduct.getPrice()) {
-                    Product temp = productList.get(i);
-                    productList.set(i, productList.get(j));
-                    productList.set(j, temp);
-                    currentProduct = productList.get(i);
-                }
+        Collections.sort(productList, new Comparator<Product>() {
+            @Override
+            public int compare(Product o1, Product o2) {
+                return o2.getPrice() - o1.getPrice();
             }
+        });
+    }
+
+    public void writeToFile(String path) throws IOException {
+        FileOutputStream fileOutputStream = null;
+        ObjectOutputStream objectOutputStream = null;
+        try {
+            fileOutputStream = new FileOutputStream(path);
+            objectOutputStream = new ObjectOutputStream(fileOutputStream);
+            for (Product product : productList) {
+                objectOutputStream.writeObject(product);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            objectOutputStream.close();
+            fileOutputStream.close();
+        }
+    }
+
+    public void readFile(String path) throws IOException {
+        FileInputStream fileInputStream = null;
+        ObjectInputStream objectInputStream = null;
+        try {
+            fileInputStream = new FileInputStream(path);
+            objectInputStream = new ObjectInputStream(fileInputStream);
+            Product product = null;
+            while ((product = (Product) objectInputStream.readObject()) != null) {
+                productList.add(product);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } finally {
+            objectInputStream.close();
+            fileInputStream.close();
         }
     }
 

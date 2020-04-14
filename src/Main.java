@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
@@ -5,19 +6,22 @@ public class Main {
     private static ProductManager productManager = new ProductManager();
 
     public static void main(String[] args) {
+        productManager.addDemo();
         Main.showMenu();
         Main.controller();
     }
 
     public static void showMenu() {
-        System.out.println("PRODUCT MANAGER");
+        System.out.println("\nPRODUCT MANAGER");
         System.out.println("1.Add product");
         System.out.println("2.Edit product by ID");
         System.out.println("3.Delete product by ID");
         System.out.println("4.Show product list");
         System.out.println("5.Search product by name");
         System.out.println("6.Sort by ascending/descending price order");
-        System.out.println("7.Exit");
+        System.out.println("7.Write to file");
+        System.out.println("8.Read default file");
+        System.out.println("9.Exit");
         System.out.println("----------");
     }
 
@@ -25,7 +29,7 @@ public class Main {
         System.out.print("Enter choice: ");
         int choiceMenu = scanner.nextInt();
         scanner.nextLine();
-        while (choiceMenu < 1 || choiceMenu > 7) {
+        while (choiceMenu < 1 || choiceMenu > 9) {
             System.out.print("Invalid choice! Enter again: ");
             choiceMenu = scanner.nextInt();
             scanner.nextLine();
@@ -51,6 +55,33 @@ public class Main {
                 break;
         }
         productManager.showList();
+    }
+
+    public static void writeFileOption() {
+        System.out.println("1. Write to default file");
+        System.out.println("2. Write to new file");
+        System.out.print("Enter choice: ");
+        int choice = scanner.nextInt();
+        switch (choice){
+            case 1:
+                try {
+                    productManager.writeToFile("producfile.txt");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 2:
+                scanner.nextLine();
+                System.out.print("Enter new file path: ");
+                try {
+                    productManager.writeToFile(scanner.nextLine());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            default:
+                System.out.println("Invalid choice!");
+        }
     }
 
 
@@ -95,8 +126,24 @@ public class Main {
                 Main.showMenu();
                 Main.controller();
                 break;
-            default:
+            case 8:
+                System.out.println("7.Read default product file");
+                try {
+                    productManager.readFile("producfile.txt");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Main.showMenu();
+                Main.controller();
+                break;
+            case 7:
+                System.out.println("8.Read default product file");
+                Main.writeFileOption();
+                Main.showMenu();
+                Main.controller();
+            case 9:
                 System.exit(0);
+                break;
         }
     }
 }
